@@ -167,6 +167,14 @@ h3 a:hover{color:var(--gold)}
 .tracking-result small,.tracking-contact>span{color:var(--muted)}
 .tracking-contact{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line);font-size:14px}
 .tracking-contact a:hover{text-decoration:underline}
+.floating-contact{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:25;display:grid;gap:8px}
+.floating-contact a{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;color:#fff;box-shadow:0 4px 16px #0006}
+.floating-contact-whatsapp{background:#087c48}
+.floating-contact-instagram{background:linear-gradient(135deg,#7d2db4,#bd2a54 65%,#ba4e2b)}
+.floating-contact a:hover{filter:brightness(1.17)}
+.floating-contact a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+body.locked .floating-contact{display:none}
+@media(max-width:650px){.floating-contact-product{bottom:calc(86px + env(safe-area-inset-bottom))}}
 @media(max-width:800px){
   .order-body{grid-template-columns:1fr}
   .order-total{text-align:left;justify-items:start}

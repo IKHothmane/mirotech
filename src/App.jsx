@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import CartDrawer from "./components/CartDrawer";
 import CheckoutModal from "./components/CheckoutModal";
+import FloatingContact from "./components/FloatingContact";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { CartProvider } from "./context/CartContext";
@@ -51,6 +52,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <FloatingContact />
       <CartDrawer />
       <CheckoutModal />
     </CartProvider>
