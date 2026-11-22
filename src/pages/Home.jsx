@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowUpRight,
   ChevronDown,
@@ -227,6 +227,9 @@ export default function Home() {
             <a className="button button-outline" href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer">
               <InstagramIcon size={16} /> Instagram
             </a>
+            <Link className="button button-outline" to="/suivi-commande">
+              <PackageCheck size={16} aria-hidden="true" /> Suivre ma commande
+            </Link>
           </div>
           <span className="contact-handle">
             WhatsApp : {SITE.whatsappDisplay} · Instagram : {SITE.instagramHandle}

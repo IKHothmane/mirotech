@@ -117,9 +117,6 @@ img{max-width:100%}
 /* Mobile */
 @media(max-width:650px){
   .hero-lead{font-size:14px}
-  .related-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -20px;padding:0 20px 8px;scrollbar-width:none}
-  .related-grid::-webkit-scrollbar{display:none}
-  .related-grid>div{flex:0 0 72%;scroll-snap-align:start}
   .buy-bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;align-items:center;justify-content:space-between;gap:14px;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:rgba(17,19,21,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
   .buy-bar span{display:block;font-size:11px;color:var(--muted)}
   .buy-bar strong{font:700 18px Manrope}

@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import ProductPage from "./pages/ProductPage";
+import OrderTracking from "./pages/OrderTracking";
 
 /** Gère le scroll à la navigation : ancre (#section) si présente, sinon haut de page. */
 function ScrollManager() {
@@ -44,6 +45,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/produit/:id" element={<ProductPage />} />
+          <Route path="/suivi-commande" element={<OrderTracking />} />
           <Route path="/miro" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { CheckCircle2, Loader2, ShoppingBag, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useDialog } from "../lib/useDialog";
@@ -118,6 +119,11 @@ export default function CheckoutModal({ apiUrl = ORDERS_API_URL }) {
               Merci ! MIROTECH vous contactera très bientôt pour confirmer la disponibilité, la livraison et les frais. Le
               paiement se fait à la livraison.
             </p>
+            {orderId && (
+              <Link className="button button-outline" to="/suivi-commande" state={{ orderId }} onClick={close}>
+                Suivre ma commande
+              </Link>
+            )}
             <button className="button button-primary" onClick={close}>
               Fermer
             </button>
@@ -149,8 +155,8 @@ export default function CheckoutModal({ apiUrl = ORDERS_API_URL }) {
             )}
 
             <form onSubmit={onSubmit} noValidate>
-              <label htmlFor="co-name">Nom et prénom</label>
-              <input {...bind("name")} required autoComplete="name" placeholder="Ex. Sara Alaoui" />
+              <label htmlFor="co-name">Nom ou prénom</label>
+              <input {...bind("name")} required autoComplete="name" placeholder="Ex. Sara" />
               {fieldError("name")}
 
               <label htmlFor="co-phone">Téléphone</label>

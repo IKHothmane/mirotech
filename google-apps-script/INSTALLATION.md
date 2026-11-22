@@ -36,7 +36,7 @@ Ajoutez la propriété `NOTIFY_EMAIL` (votre adresse) : vous recevrez un e-mail 
 - Après 5 mots de passe faux de suite, la connexion est bloquée 15 minutes (cela protège un mot de passe court, mais quelqu'un peut aussi vous bloquer volontairement : attendez 15 minutes). La session admin dure 30 minutes puis demande de se reconnecter.
 
 ## Règles de saisie du formulaire
-Nom et prénom : lettres, espaces, tiret, apostrophe (2 mots minimum, 60 caractères max). Téléphone : numéro marocain (05/06/07 ou +212). Ville et adresse : un seul champ, 150 caractères maximum, aucune autre règle. Ces règles sont revérifiées par `Code.gs`.
+Nom ou prénom : un seul mot suffit, 60 caractères maximum. Téléphone : numéro marocain (05/06/07 ou +212). Ville et adresse : un seul champ, 150 caractères maximum, aucune autre règle. Ces règles sont revérifiées par `Code.gs`.
 La feuille a 9 colonnes (Date, N° commande, Nom et prénom, Téléphone, Ville et adresse, Articles, Total, Paiement, Statut) : si vous aviez déjà créé la feuille avec une ancienne version, supprimez l'onglet « Commandes » pour qu'il soit recréé.
 
 ## Si vous modifiez Code.gs

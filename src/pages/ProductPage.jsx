@@ -4,7 +4,6 @@ import { Banknote, ChevronDown, LifeBuoy, MessageCircle, Plus, ShieldCheck, Shop
 import ProductCard from "../components/ProductCard";
 import ProductGallery from "../components/ProductGallery";
 import QtyStepper from "../components/QtyStepper";
-import Reveal from "../components/Reveal";
 import NotFound from "./NotFound";
 import { useCart } from "../context/CartContext";
 import { categoryLabelFor, getProduct, products } from "../data/products";
@@ -24,12 +23,12 @@ function ProductView({ product }) {
   const [variantIndex, setVariantIndex] = useState(0);
   const [qty, setQty] = useState(1);
   const variant = product.variants[variantIndex];
+  const related = products.filter((item) => item.id !== product.id).slice(0, 3);
   usePageMeta({
     title: `${product.name} — MIROTECH`,
     description: product.description,
     canonical: `${SITE.url}/produit/${product.id}`,
   });
-  const related = products.filter((p) => p.id !== product.id).slice(0, 3);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -154,18 +153,14 @@ function ProductView({ product }) {
           </div>
         </div>
 
-        <Reveal>
-          <h2 className="related-title">
+        <section aria-labelledby="related-products-title">
+          <h2 className="related-title" id="related-products-title">
             Dans la même <em>sélection.</em>
           </h2>
-        </Reveal>
-        <div className="product-grid related-grid">
-          {related.map((p, i) => (
-            <Reveal key={p.id} delay={i * 0.08}>
-              <ProductCard product={p} />
-            </Reveal>
-          ))}
-        </div>
+          <div className="product-grid related-grid">
+            {related.map((item) => <ProductCard key={item.id} product={item} />)}
+          </div>
+        </section>
       </div>
 
       <div className="buy-bar" role="region" aria-label="Achat rapide">

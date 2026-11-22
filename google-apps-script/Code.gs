@@ -61,7 +61,7 @@ const CATALOGUE = {
 /* ------------------------------ Points d'entrée ------------------------------ */
 
 // Change ce numéro à chaque modification : il permet de vérifier que la NOUVELLE version est bien en ligne.
-const VERSION = "2026-11-22-h";
+const VERSION = "2026-11-22-j";
 const ORDER_SHEET_STYLE = "mirotech-orders-style-v1";
 
 function doGet() {
@@ -74,6 +74,7 @@ function doPost(e) {
     if (!raw || raw.length > 20000) return json_({ ok: false, error: "Requête invalide." });
     const body = JSON.parse(raw);
     if (body.action === "order") return json_(createOrder_(body));
+    if (body.action === "trackOrder") return json_(trackOrder_(body));
     if (body.action === "list") return json_(listOrders_(body));
     if (body.action === "updateStatus") return json_(updateOrderStatus_(body));
     if (body.action === "logout") return json_(logout_(body));
@@ -94,8 +95,8 @@ function createOrder_(body) {
   const name = clean_(customer.name, 60);
   const address = clean_(customer.address, 150); // « Ville et adresse » : 150 max, aucune autre règle de caractères
   const phone = normalizePhone_(customer.phone);
-  if (!/^[\p{L}][\p{L}'’.-]*(?:\s+[\p{L}][\p{L}'’.-]*)+$/u.test(name) || name.length < 5) {
-    return { ok: false, error: "Indiquez votre nom et prénom (lettres uniquement)." };
+  if (!/^[\p{L}][\p{L}'’.-]*(?:\s+[\p{L}][\p{L}'’.-]*)*$/u.test(name)) {
+    return { ok: false, error: "Indiquez votre nom ou votre prénom." };
   }
   if (!phone) return { ok: false, error: "Numéro de téléphone marocain invalide." };
   if (!address) return { ok: false, error: "Indiquez votre ville et votre adresse." };
@@ -248,6 +249,39 @@ function listOrders_(body) {
   }
   const sheetUrl = sheet.getParent().getUrl() + "#gid=" + sheet.getSheetId();
   return { ok: true, token: token, orders: orders, sheetUrl: sheetUrl };
+}
+
+function trackOrder_(body) {
+  const orderId = typeof body.orderId === "string" ? body.orderId.trim().toUpperCase() : "";
+  const phone = normalizePhone_(body.phone);
+  if (!/^MT-\d{6}-\d{4}$/.test(orderId) || !phone) {
+    return { ok: false, error: "Vérifiez le numéro de commande et le téléphone." };
+  }
+
+  const cache = CacheService.getScriptCache();
+  const key = "track:" + orderId;
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(3000)) return { ok: false, error: "Suivi occupé. Réessayez dans un instant." };
+  try {
+    const attempts = Number(cache.get(key) || 0);
+    if (attempts >= 12) return { ok: false, error: "Trop de tentatives. Réessayez dans quelques minutes." };
+    cache.put(key, String(attempts + 1), 300);
+  } finally {
+    lock.releaseLock();
+  }
+
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const count = sheet ? sheet.getLastRow() - 1 : 0;
+  if (count > 0) {
+    const rows = sheet.getRange(2, 2, count, HEADERS.length - 1).getValues();
+    const matches = rows.filter(([id, , storedPhone]) => id === orderId &&
+      safeEqual_(normalizePhone_(storedPhone) || "", phone));
+    if (matches.length === 1) {
+      const status = matches[0][HEADERS.length - 2];
+      return { ok: true, status: STATUS_COLORS.has(status) ? status : "En cours de traitement" };
+    }
+  }
+  return { ok: false, error: "Aucune commande trouvée avec ces informations." };
 }
 
 function updateOrderStatus_(body) {

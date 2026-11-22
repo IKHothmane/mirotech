@@ -50,8 +50,10 @@ describe("validateOrderForm", () => {
     expect(validateOrderForm(valid)).toEqual({});
   });
 
-  it("exige nom ET prénom", () => {
-    expect(validateOrderForm({ ...valid, name: "Sara" }).name).toBeDefined();
+  it("accepte un nom ou un prénom seul, et refuse un champ vide ou des chiffres", () => {
+    expect(validateOrderForm({ ...valid, name: "Sara" })).toEqual({});
+    expect(validateOrderForm({ ...valid, name: "Li" })).toEqual({});
+    expect(validateOrderForm({ ...valid, name: "" }).name).toBeDefined();
     expect(validateOrderForm({ ...valid, name: "Sara 2" }).name).toBeDefined();
   });
 

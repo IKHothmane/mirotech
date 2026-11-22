@@ -148,6 +148,16 @@ h3 a:hover{color:var(--gold)}
 .order-status .status-delivered[aria-pressed="true"]{background:#7fe3a1}
 .order-status .status-cancelled[aria-pressed="true"]{background:#ff9d8f}
 .order-status .status:disabled{cursor:wait}
+.tracking-page{max-width:580px;margin-inline:auto}
+.tracking-page h1{font-size:clamp(32px,6vw,54px)}
+.tracking-page>p{color:var(--muted)}
+.tracking-form{display:grid;gap:16px;margin:24px 0}
+.tracking-form label{display:grid;gap:6px;font-size:14px}
+.tracking-form input{width:100%;min-height:46px;padding:10px 12px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.tracking-page .tracking-result{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:14px;background:var(--panel);border:1px solid var(--line)}
+.tracking-result strong,.tracking-contact a{color:var(--gold)}
+.tracking-contact{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
+.tracking-contact a{text-decoration:underline}
 @media(max-width:800px){
   .order-body{grid-template-columns:1fr}
   .order-total{text-align:left;justify-items:start}

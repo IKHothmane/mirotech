@@ -61,6 +61,11 @@ export function updateOrderStatus(token, { id, row }, status, { url = ORDERS_API
   return callApi(url, { action: "updateStatus", token, orderId: id, row, status });
 }
 
+export function trackOrder(orderId, phone, { url = ORDERS_API_URL } = {}) {
+  if (!url) return Promise.reject(new Error("Le suivi est momentanément indisponible."));
+  return callApi(url, { action: "trackOrder", orderId, phone });
+}
+
 export function logoutOrders(token, { url = ORDERS_API_URL } = {}) {
   if (!url || !token) return Promise.resolve();
   return callApi(url, { action: "logout", token }, 10000).catch(() => {});

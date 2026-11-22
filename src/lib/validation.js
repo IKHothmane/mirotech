@@ -3,7 +3,7 @@
 
 export const LIMITS = { name: 60, phone: 18, address: 150 };
 
-const NAME_RE = /^[\p{L}][\p{L}'’.-]*(?:\s+[\p{L}][\p{L}'’.-]*)+$/u; // au moins deux mots : nom + prénom
+const NAME_RE = /^[\p{L}][\p{L}'’.-]*(?:\s+[\p{L}][\p{L}'’.-]*)*$/u;
 
 /** Chiffres arabo-indiens / persans → chiffres 0-9. */
 export const toAsciiDigits = (s) =>
@@ -35,8 +35,8 @@ export function validateOrderForm({ name, phone, address }) {
   const errors = {};
   const n = String(name ?? "").trim();
   const a = String(address ?? "").trim();
-  if (!(NAME_RE.test(n) && n.length >= 5 && n.length <= LIMITS.name)) {
-    errors.name = "Indiquez votre nom et prénom (lettres uniquement).";
+  if (!NAME_RE.test(n) || n.length > LIMITS.name) {
+    errors.name = "Indiquez votre nom ou votre prénom.";
   }
   if (!normalizeMoroccanPhone(phone)) {
     errors.phone = "Numéro marocain invalide. Exemple : 06 12 34 56 78 ou +212 6 12 34 56 78.";

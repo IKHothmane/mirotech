@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { CartProvider, useCart } from "../context/CartContext";
 import CheckoutModal from "./CheckoutModal";
 
@@ -15,10 +16,12 @@ function Harness() {
 
 const setup = (apiUrl = "https://script.example/exec") => {
   render(
-    <CartProvider>
-      <Harness />
-      <CheckoutModal apiUrl={apiUrl} />
-    </CartProvider>,
+    <MemoryRouter>
+      <CartProvider>
+        <Harness />
+        <CheckoutModal apiUrl={apiUrl} />
+      </CartProvider>
+    </MemoryRouter>,
   );
   fireEvent.click(screen.getByText("go"));
 };
@@ -26,7 +29,7 @@ const setup = (apiUrl = "https://script.example/exec") => {
 const type = (label, value) => fireEvent.change(screen.getByLabelText(label), { target: { value } });
 const fill = (overrides = {}) => {
   const v = { name: "Sara Alaoui", phone: "06 12 34 56 78", address: "Casablanca, Maarif, rue 3, immeuble 12", ...overrides };
-  type("Nom et prénom", v.name);
+  type("Nom ou prénom", v.name);
   type("Téléphone", v.phone);
   type("Ville et adresse", v.address);
 };
@@ -47,8 +50,8 @@ describe("formulaire Commander", () => {
 
   it("limite la saisie : caractères interdits retirés et longueurs plafonnées", () => {
     setup();
-    type("Nom et prénom", "Sara <b>12 Alaoui");
-    expect(screen.getByLabelText("Nom et prénom")).toHaveValue("Sara b Alaoui");
+    type("Nom ou prénom", "Sara <b>12 Alaoui");
+    expect(screen.getByLabelText("Nom ou prénom")).toHaveValue("Sara b Alaoui");
     type("Téléphone", "06abc12345678");
     expect(screen.getByLabelText("Téléphone")).toHaveValue("0612345678");
     type("Ville et adresse", "Casa <rue> n°5/B & co");
@@ -62,10 +65,10 @@ describe("formulaire Commander", () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
     setup();
-    fill({ name: "Sara", phone: "123", address: "" });
+    fill({ name: "", phone: "123", address: "" });
     submit();
     const alerts = screen.getAllByRole("alert").map((a) => a.textContent).join(" ");
-    expect(alerts).toMatch(/nom et prénom/i);
+    expect(alerts).toMatch(/nom ou votre prénom/i);
     expect(alerts).toMatch(/Numéro marocain invalide/);
     expect(alerts).toMatch(/ville et votre adresse/i);
     expect(fetchMock).not.toHaveBeenCalled();
@@ -80,6 +83,7 @@ describe("formulaire Commander", () => {
     submit();
     expect(await screen.findByText("Votre commande a été envoyée !")).toBeInTheDocument();
     expect(screen.getByText("MT-250101-0001")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Suivre ma commande" })).toHaveAttribute("href", "/suivi-commande");
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const body = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(body.customer).toEqual({ name: "Sara Alaoui", phone: "0612345678", address: "Casablanca, Maarif, rue 3, immeuble 12" });
@@ -98,7 +102,7 @@ describe("formulaire Commander", () => {
     expect(screen.getByText(/n'a pas été envoyée/)).toBeInTheDocument();
     expect(document.body.innerHTML).not.toContain("wa.me");
     expect(screen.getByTestId("count")).toHaveTextContent("1");
-    expect(screen.getByLabelText("Nom et prénom")).toHaveValue("Sara Alaoui");
+    expect(screen.getByLabelText("Nom ou prénom")).toHaveValue("Sara Alaoui");
   });
 
   it("si le serveur de commandes n'est pas configuré : dit la vérité, n'ouvre pas WhatsApp, ne prétend pas avoir envoyé", () => {

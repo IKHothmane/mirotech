@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "./App";
+import * as orders from "./lib/orders";
 
 const renderAt = (path) =>
   render(
@@ -14,6 +15,21 @@ beforeEach(() => localStorage.clear());
 afterEach(cleanup);
 
 describe("boutique", () => {
+  it("ouvre le suivi depuis Contact et affiche le statut de la commande", async () => {
+    const lookup = vi.spyOn(orders, "trackOrder").mockResolvedValue({ status: "Livrée" });
+    try {
+      renderAt("/");
+      fireEvent.click(screen.getByRole("link", { name: "Suivre ma commande" }));
+      fireEvent.change(screen.getByLabelText("Numéro de commande"), { target: { value: "mt-261122-0001" } });
+      fireEvent.change(screen.getByLabelText("Téléphone"), { target: { value: "+212 6 12 34 56 78" } });
+      fireEvent.click(screen.getByRole("button", { name: "Voir le statut" }));
+      expect(await screen.findByText("Livrée")).toBeInTheDocument();
+      expect(lookup).toHaveBeenCalledWith("MT-261122-0001", "0612345678");
+    } finally {
+      lookup.mockRestore();
+    }
+  });
+
   it("affiche les 4 produits et filtre par catégorie", () => {
     renderAt("/");
     expect(screen.getAllByRole("heading", { level: 3 }).filter((h) => h.closest(".product-card"))).toHaveLength(4);
@@ -50,11 +66,11 @@ describe("boutique", () => {
     renderAt("/produit/carplay-2in1");
     fireEvent.click(screen.getByRole("button", { name: /Ajouter au panier/ }));
     fireEvent.click(within(document.querySelector(".cart-drawer")).getByRole("button", { name: /^Commander/ }));
-    fireEvent.change(screen.getByLabelText("Nom et prénom"), { target: { value: "Sara Alaoui" } });
+    fireEvent.change(screen.getByLabelText("Nom ou prénom"), { target: { value: "Sara Alaoui" } });
     fireEvent.keyDown(document, { key: "Escape" });
     fireEvent.click(screen.getByRole("button", { name: /Ouvrir le panier/ }));
     fireEvent.click(within(document.querySelector(".cart-drawer")).getByRole("button", { name: /^Commander/ }));
-    expect(screen.getByLabelText("Nom et prénom")).toHaveValue("Sara Alaoui");
+    expect(screen.getByLabelText("Nom ou prénom")).toHaveValue("Sara Alaoui");
     expect(document.body.innerHTML).not.toMatch(/Envoyer la commande sur WhatsApp/);
   });
 
