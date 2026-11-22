@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { ArrowLeft, ArrowUpRight, Loader2, MessageCircle, PackageCheck, Search } from "lucide-react";
 import { SITE } from "../lib/format";
 import { trackOrder } from "../lib/orders";
 import { usePageMeta } from "../lib/usePageMeta";
 import { normalizeMoroccanPhone } from "../lib/validation";
+
+const STATUS_TONES = new Map([
+  ["Nouvelle", "new"],
+  ["Confirmée", "confirmed"],
+  ["Livrée", "delivered"],
+  ["Annulée", "cancelled"],
+]);
 
 export default function OrderTracking() {
   usePageMeta({ title: "Suivre ma commande — MIROTECH", robots: "noindex, follow" });
@@ -34,31 +42,39 @@ export default function OrderTracking() {
   }
 
   return (
-    <section className="section tracking-page">
-      <h1>Suivre ma commande</h1>
-      <p>Indiquez le numéro reçu à la confirmation et le téléphone utilisé pour commander.</p>
-      <form className="tracking-form" onSubmit={handleSubmit}>
-        <label>
-          Numéro de commande
-          <input name="orderId" placeholder="MT-261122-0001" defaultValue={state?.orderId || ""} required maxLength={14} disabled={loading} />
-        </label>
-        <label>
-          Téléphone
-          <input name="phone" type="tel" autoComplete="tel" placeholder="06 12 34 56 78" required maxLength={18} disabled={loading} />
-        </label>
-        <button className="button button-primary" type="submit" disabled={loading}>
-          {loading ? "Recherche…" : "Voir le statut"}
-        </button>
-      </form>
-      {result?.error && <p className="form-status form-error" role="alert">{result.error}</p>}
-      {result?.status && (
-        <p className="tracking-result" role="status">
-          Commande {result.orderId} <strong>{result.status}</strong>
-        </p>
-      )}
-      <div className="tracking-contact">
-        <Link to="/#contact">Contact</Link>
-        <a href={"https://wa.me/" + SITE.whatsappNumber} target="_blank" rel="noopener noreferrer">Écrire sur WhatsApp</a>
+    <section className="section tracking-page" aria-labelledby="tracking-title">
+      <Link className="tracking-back" to="/#contact"><ArrowLeft size={16} aria-hidden="true" /> Retour à Contact</Link>
+      <div className="tracking-card">
+        <div className="tracking-icon"><PackageCheck size={25} aria-hidden="true" /></div>
+        <h1 id="tracking-title">Suivre ma commande</h1>
+        <p className="tracking-intro">Retrouvez le statut de votre commande avec son numéro et le téléphone utilisé lors de l’achat.</p>
+        <form className="tracking-form" onSubmit={handleSubmit} aria-busy={loading}>
+          <label>
+            Numéro de commande
+            <input name="orderId" placeholder="MT-261122-0001" defaultValue={state?.orderId || ""} autoCapitalize="characters" spellCheck={false} required maxLength={14} disabled={loading} />
+          </label>
+          <label>
+            Téléphone
+            <input name="phone" type="tel" autoComplete="tel" placeholder="06 12 34 56 78" required maxLength={18} disabled={loading} />
+          </label>
+          <button className="button button-primary" type="submit" disabled={loading}>
+            {loading ? <Loader2 size={17} className="spin" aria-hidden="true" /> : <Search size={17} aria-hidden="true" />}
+            {loading ? "Recherche…" : "Voir le statut"}
+          </button>
+        </form>
+        {result?.error && <p className="form-status form-error" role="alert">{result.error}</p>}
+        {result?.status && (
+          <div className="tracking-result" role="status">
+            <div><small>Numéro de commande</small><strong>{result.orderId}</strong></div>
+            <span className={`status status-${STATUS_TONES.get(result.status) ?? "other"}`}>{result.status}</span>
+          </div>
+        )}
+        <div className="tracking-contact">
+          <span>Besoin d’aide ?</span>
+          <a href={"https://wa.me/" + SITE.whatsappNumber} target="_blank" rel="noopener noreferrer">
+            <MessageCircle size={16} aria-hidden="true" /> Écrire sur WhatsApp <ArrowUpRight size={14} aria-hidden="true" />
+          </a>
+        </div>
       </div>
     </section>
   );
